@@ -401,7 +401,7 @@ VISTAS.paso4 = function () {
 
 VISTAS.paso5 = function () {
   var lim = P('fecha_limite_certificado', ''), txt = P('texto_fecha_limite', 'Fecha límite para enviar tu certificado oficial');
-  return titulo('Paso 5', 'Sube tu certificado oficial', 'Si tu examen fue aprobatorio, AWS te envía el certificado oficial. Descárgalo y súbelo aquí.') +
+  return titulo('Paso 5', 'Sube tu certificado oficial', 'Si tu examen fue aprobatorio, AWS te envía el certificado oficial. Súbelo aquí.') +
     (lim ? '<div class="alto"><h3>' + esc(txt) + '</h3><p><b>' + esc(fmtFecha(lim)) + '</b></p></div>' : '') +
     subidaHtml('certificado_oficial') + navPaso(['paso4', 'Paso 4'], ['paso6', 'Paso 6 (opcional)']);
 };
