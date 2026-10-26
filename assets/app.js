@@ -92,8 +92,9 @@ function aplicar(j) {
   S.usuario = j.usuario; S.config = j.config; S.estado = j.estado; S.offset = j.ahora - Date.now(); S.ultimo = Date.now();
 }
 function guardarSesion() { LS.set('g2_sesion', { token: S.token, exp: S.exp }); }
+function ocultarSplash() { var s = $('#splash'); if (s) s.hidden = true; }
 function mostrarLogin(texto) {
-  $('#app').hidden = true; $('#login').hidden = false;
+  ocultarSplash(); $('#app').hidden = true; $('#login').hidden = false;
   var m = $('#lgMsg');
   if (texto) mostrarMsg(m, 'info', texto); else m.hidden = true;
   setTimeout(function () { try { $('#lgCorreo').focus(); } catch (e) {} }, 50);
@@ -144,7 +145,7 @@ var RUTAS = [
 ];
 
 function abrirApp() {
-  $('#login').hidden = true; $('#app').hidden = false; $('#preview').hidden = !DEMO;
+  ocultarSplash(); $('#login').hidden = true; $('#app').hidden = false; $('#preview').hidden = !DEMO;
   document.title = P('nombre_programa', 'CPFIA · Generación 2') + ' · ' + P('titulo_sitio', 'Certificación AWS Cloud Practitioner');
   pintarCabecera();
   if (!location.hash || location.hash === '#') location.hash = '#/inicio';
@@ -172,7 +173,7 @@ async function ruta() {
   var id = (location.hash.replace(/^#\/?/, '') || 'inicio');
   if (!VISTAS[id]) id = id === 'privacidad' ? 'privacidad' : 'inicio';
   clearInterval(ticker);
-  if (Date.now() - S.ultimo > 180000) await refrescar();
+  if (Date.now() - S.ultimo > 180000) { $('#vista').innerHTML = '<div class="cargando"><div class="spin" aria-hidden="true"></div>Cargando…</div>'; await refrescar(); }
   S.vista = id;
   pintarCabecera(); pintarMenu(id);
   var v = $('#vista'); v.innerHTML = bannerRev() + VISTAS[id](); window.scrollTo(0, 0);
@@ -229,7 +230,7 @@ function subidaHtml(clave) {
   var e = docs()[clave], max = P('max_archivo_mb', '3');
   var f = S.flash[clave]; delete S.flash[clave];
   var abierto = String(P('registro_abierto', 'S')).toUpperCase() !== 'N';
-  return '<div class="card"><h3>' + esc(def.nombre) + '</h3><p style="margin:0 0 10px;color:var(--suave)">' + esc(def.descripcion) + '</p>' + estadoDoc(clave) +
+  return '<div class="card"><h3>' + esc(def.nombre) + '</h3>' + (def.descripcion ? '<p style="margin:0 0 10px;color:var(--suave)">' + esc(def.descripcion) + '</p>' : '') + estadoDoc(clave) +
     (abierto ? '<form data-doc="' + esc(clave) + '" novalidate><div class="fila">' +
       (def.requiere_resultado ? '<div><label for="res_' + esc(clave) + '">Resultado</label><select name="resultado" id="res_' + esc(clave) + '"><option value="">Selecciona…</option><option>Aprobatorio</option><option>No aprobatorio</option></select></div>' : '') +
       '<div><label for="arc_' + esc(clave) + '">Archivo</label><input type="file" name="archivo" id="arc_' + esc(clave) + '" accept=".pdf,application/pdf"><small class="ayuda">Solo PDF, máx. ' + esc(max) + ' MB.</small></div></div>' +
