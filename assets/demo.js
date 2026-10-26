@@ -130,6 +130,7 @@ window.G2_DEMO = { handle: async function (d) {
       estado.sim.intentos++; estado.sim.ultimo = pct; estado.sim.mejor = Math.max(estado.sim.mejor || 0, pct);
       return { ok: true, aciertos: ac, total: intentoDemo.length, pct: pct, aprobar: 70, minutos: 1, dominios: doms, revision: rev, sim: copia(estado.sim) };
     }
+    case 'voucher': estado.voucher = d.valor; return { ok: true, estado: copia(estado), mensaje: (d.valor === 'Sí' ? 'Gracias, registramos que ya recibiste tu voucher.' : 'Registramos que aún no recibes tu voucher.') + ' (vista previa: no se guardó)' };
     case 'aceptarAviso': estado.avisoAceptado = 'v1 · ' + ts(); return { ok: true, estado: copia(estado) };
   }
   return { ok: false, codigo: 'accion', error: 'Acción no válida.' };
