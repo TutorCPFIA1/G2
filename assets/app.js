@@ -154,7 +154,7 @@ function abrirApp() {
 function pintarCabecera() {
   $('#marca').textContent = P('nombre_programa', 'CPFIA · Generación 2');
   $('#uNombre').textContent = titleCase(S.usuario.nombre);
-  $('#uCohort').textContent = 'Cohort ' + S.usuario.cohort;
+  $('#uCohort').textContent = S.usuario.tipo === 'Revisor' ? (S.usuario.rol || 'Equipo') + ' · modo lectura' : 'Cohort ' + S.usuario.cohort;
   var c = P('correo_contacto', 'tutor.cpfia1@infotec.mx'), a = $('#pieCorreo'); a.textContent = c; a.href = 'mailto:' + c;
 }
 function actualizarFab() { var f = $('#fabDudas'); if (!f) return; f.hidden = !S.usuario || S.vista === 'dudas' || (S.vista === 'simulacro' && SIM.fase === 'examen'); }
@@ -175,10 +175,11 @@ async function ruta() {
   if (Date.now() - S.ultimo > 180000) await refrescar();
   S.vista = id;
   pintarCabecera(); pintarMenu(id);
-  var v = $('#vista'); v.innerHTML = VISTAS[id](); window.scrollTo(0, 0);
+  var v = $('#vista'); v.innerHTML = bannerRev() + VISTAS[id](); window.scrollTo(0, 0);
   if (POST[id]) POST[id]();
 }
-function repintar() { if (!S.vista) return; pintarMenu(S.vista); var y = window.scrollY; $('#vista').innerHTML = VISTAS[S.vista](); window.scrollTo(0, y); if (POST[S.vista]) POST[S.vista](); }
+function bannerRev() { return S.usuario && S.usuario.tipo === 'Revisor' ? '<div class="banner"><b>Modo revisión:</b> ves el sitio como lo ven los estudiantes. Puedes recorrerlo, pero no subir documentos ni registrar fechas o dudas.</div>' : ''; }
+function repintar() { if (!S.vista) return; pintarMenu(S.vista); var y = window.scrollY; $('#vista').innerHTML = bannerRev() + VISTAS[S.vista](); window.scrollTo(0, y); if (POST[S.vista]) POST[S.vista](); }
 
 /* ---------- Bloques reutilizables ---------- */
 function textos(clave) { return (S.config.textos || []).filter(function (t) { return t.clave === clave; }); }
@@ -611,7 +612,7 @@ async function enviarDuda(form) {
 /* ---------- Aviso de privacidad (primer ingreso) ---------- */
 function pedirAviso() {
   var ver = P('aviso_privacidad_version', '1'), ac = S.estado.avisoAceptado || '';
-  if (ac.indexOf('v' + ver) === 0) return;
+  if (ac.indexOf('v' + ver) === 0 || S.usuario.tipo === 'Revisor') return;
   $('#modalCuerpo').innerHTML = textoHtml('aviso_privacidad') || '<h3>Aviso de privacidad</h3>';
   $('#modalMsg').hidden = true; $('#modalAviso').hidden = false;
   $('#btnAcepto').onclick = async function () {
