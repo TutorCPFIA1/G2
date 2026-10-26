@@ -232,7 +232,7 @@ function subidaHtml(clave) {
   return '<div class="card"><h3>' + esc(def.nombre) + '</h3><p style="margin:0 0 10px;color:var(--suave)">' + esc(def.descripcion) + '</p>' + estadoDoc(clave) +
     (abierto ? '<form data-doc="' + esc(clave) + '" novalidate><div class="fila">' +
       (def.requiere_resultado ? '<div><label for="res_' + esc(clave) + '">Resultado</label><select name="resultado" id="res_' + esc(clave) + '"><option value="">Selecciona…</option><option>Aprobatorio</option><option>No aprobatorio</option></select></div>' : '') +
-      '<div><label for="arc_' + esc(clave) + '">Archivo</label><input type="file" name="archivo" id="arc_' + esc(clave) + '" accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/*"><small class="ayuda">PDF, PNG o JPG, máx. ' + esc(max) + ' MB. Las fotos y capturas se reducen solas.</small></div></div>' +
+      '<div><label for="arc_' + esc(clave) + '">Archivo</label><input type="file" name="archivo" id="arc_' + esc(clave) + '" accept=".pdf,application/pdf"><small class="ayuda">Solo PDF, máx. ' + esc(max) + ' MB.</small></div></div>' +
       '<div><button class="btn" type="submit">' + (e ? 'Reemplazar documento' : 'Subir documento') + '</button></div>' +
       '<div class="msg ' + (f ? 'ok' : '') + '" role="status" aria-live="polite"' + (f ? '' : ' hidden') + '>' + esc(f || '') + '</div></form>' +
       '<p class="ayuda" style="font-size:14px;color:var(--suave);margin:10px 0 0">' + esc(textoPlano('nota_documentos', '')) + '</p>'
@@ -348,7 +348,7 @@ VISTAS.paso2 = function () {
     (abierto ? '<form id="fFecha" novalidate><div class="fila">' +
       '<div><label for="fxFecha">Fecha de tu examen</label><input type="date" id="fxFecha" name="fecha"' + (max ? ' max="' + esc(max) + '"' : '') + '></div>' +
       '<div><label for="fxMod">Modalidad</label><select name="modalidad" id="fxMod"><option value="">Selecciona…</option><option>En línea (OnVUE)</option><option>Centro de pruebas</option></select></div>' +
-      '<div><label for="fxArc">Correo de Pearson VUE (opcional)</label><input type="file" id="fxArc" name="archivo" accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/*"><small class="ayuda">Captura o PDF del correo con tu cita. Máx. ' + esc(P('max_archivo_mb', '3')) + ' MB.</small></div></div>' +
+      '<div><label for="fxArc">Correo de Pearson VUE (opcional)</label><input type="file" id="fxArc" name="archivo" accept=".pdf,application/pdf"><small class="ayuda">Solo PDF del correo con tu cita. Máx. ' + esc(P('max_archivo_mb', '3')) + ' MB.</small></div></div>' +
       (max ? '<div class="nota">La fecha máxima para presentar el examen es el ' + esc(fmtFecha(max)) + '.</div>' : '') +
       '<div class="nota">Al agendar recibes dos correos de Pearson VUE: <i>Action required and exam time confirmed</i> y <i>Confirmation of Payment</i>. Puedes subir cualquiera de los dos.</div>' +
       '<div><button class="btn" type="submit">' + (e.fechaExamen ? 'Actualizar fecha' : 'Registrar fecha') + '</button></div>' +
@@ -576,14 +576,14 @@ async function comprimir(file, maxB) {
 }
 async function prepararArchivo(file) {
   var maxB = parseFloat(P('max_archivo_mb', '3')) * 1048576, maxMB = P('max_archivo_mb', '3');
-  var esPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name), esImg = /^image\//.test(file.type) || /\.(png|jpe?g)$/i.test(file.name);
+  var esPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name), esImg = false;
   var blob = file, nombre = file.name;
   if (esPdf) {
-    if (file.size > maxB) throw new Error('Tu PDF pesa ' + (file.size / 1048576).toFixed(1) + ' MB y el máximo es ' + maxMB + ' MB. Sube una captura de pantalla (PNG o JPG) del documento, o reduce el PDF.');
+    if (file.size > maxB) throw new Error('Tu PDF pesa ' + (file.size / 1048576).toFixed(1) + ' MB y el máximo es ' + maxMB + ' MB. Reduce el PDF (por ejemplo, vuelve a descargarlo o expórtalo con menor calidad).');
   } else if (esImg) {
     var yaOk = /^image\/(png|jpeg)$/.test(file.type) && file.size <= 1.2 * 1048576;
     if (!yaOk) { blob = await comprimir(file, maxB); nombre = nombre.replace(/\.\w+$/, '') + '.jpg'; }
-  } else throw new Error('El archivo debe ser PDF, PNG o JPG.');
+  } else throw new Error('El archivo debe ser PDF.');
   if (blob.size > maxB) throw new Error('El archivo pesa ' + (blob.size / 1048576).toFixed(1) + ' MB y el máximo es ' + maxMB + ' MB.');
   return { nombre: nombre, base64: await aBase64(blob) };
 }
