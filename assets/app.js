@@ -14,7 +14,7 @@ var LS = {
 };
 var S = { token: null, exp: 0, usuario: null, config: null, estado: null, offset: 0, ultimo: 0, vista: '', flash: {} };
 var ticker = null;
-var ESCRITURAS = ['subirDocumento', 'registrarFecha', 'registrarDuda', 'noCertificara', 'aceptarAviso'];
+var ESCRITURAS = ['subirDocumento', 'registrarFecha', 'registrarDuda', 'noCertificara', 'aceptarAviso', 'voucher'];
 
 /* ---------- Utilidades ---------- */
 function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -239,6 +239,23 @@ function subidaHtml(clave) {
       : '<div class="msg info">La recepción de documentos está pausada por el momento.</div>') +
     ejemploHtml(def.ejemplo) + '</div>';
 }
+function voucherHtml() {
+  var v = (S.estado && S.estado.voucher) || '';
+  var abierto = String(P('registro_abierto', 'S')).toUpperCase() !== 'N';
+  var est = v === 'Sí' ? '<div class="msg ok">Registraste que <b>ya recibiste tu voucher</b>.</div>'
+    : v === 'Aún no' ? '<div class="msg info">Registraste que <b>todavía no recibes tu voucher</b>. Cuando te llegue, actualiza tu respuesta.</div>' : '';
+  return '<div class="card" id="cardVoucher"><h3>¿Ya recibiste tu voucher?</h3>' +
+    '<p style="margin:0 0 10px;color:var(--suave)">El voucher te llega por correo de NETEC después de concluir el curso y entregar tu certificado. Cuéntanos si ya lo recibiste.</p>' + est +
+    (abierto ? '<div class="acciones" style="margin-top:12px"><button class="btn' + (v === 'Sí' ? '' : ' sec') + '" type="button" data-voucher="Sí">Sí, ya lo recibí</button>' +
+      '<button class="btn' + (v === 'Aún no' ? '' : ' sec') + '" type="button" data-voucher="Aún no">Todavía no</button></div>' +
+      '<div class="msg" role="status" aria-live="polite" hidden></div>' : '') + '</div>';
+}
+async function enviarVoucher(btn) {
+  var card = btn.closest('#cardVoucher'), msg = $('.msg[role=status]', card), valor = btn.getAttribute('data-voucher');
+  $$('button[data-voucher]', card).forEach(function (b) { b.disabled = true; });
+  try { mostrarMsg(msg, 'info', 'Guardando…'); var j = await llamar('voucher', { valor: valor }); S.estado = j.estado; repintar(); }
+  catch (e) { mostrarMsg(msg, 'err', e.message); $$('button[data-voucher]', card).forEach(function (b) { b.disabled = false; }); }
+}
 function navPaso(ant, sig) {
   return '<div class="acciones" style="justify-content:space-between;margin-top:26px">' +
     (ant ? '<a class="btn sec" href="#/' + ant[0] + '">← ' + esc(ant[1]) + '</a>' : '<span></span>') +
@@ -302,6 +319,7 @@ VISTAS.paso1 = function () {
     (aviso ? '<div class="alto"><h3>' + esc(aviso.titulo) + '</h3><p>' + esc(aviso.texto) + '</p></div>' : '') +
     '<h2 class="sec">Curso y materiales</h2>' + materiales(1) +
     '<h2 class="sec">Entrega tu certificado del curso</h2>' + subidaHtml('constancia_curso') +
+    voucherHtml() +
     navPaso(['inicio', 'Inicio'], ['paso2', 'Paso 2: Agenda tu examen']);
 };
 
@@ -516,8 +534,9 @@ VISTAS.privacidad = function () {
 
 /* ---------- Eventos delegados ---------- */
 document.addEventListener('click', function (ev) {
-  var t = ev.target.closest ? ev.target.closest('[data-ejemplo],[data-meet]') : null;
+  var t = ev.target.closest ? ev.target.closest('[data-ejemplo],[data-meet],[data-voucher]') : null;
   if (!t) return;
+  if (t.hasAttribute('data-voucher')) { enviarVoucher(t); return; }
   if (t.hasAttribute('data-meet')) { abrirMeet(t.getAttribute('data-meet'), t); return; }
   var cont = t.parentElement.querySelector('.ejimgs'); if (!cont) return;
   var abierto = !cont.hidden; cont.hidden = abierto;
