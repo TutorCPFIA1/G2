@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="light">
+<title>CPFIA Generación 2 · Certificación AWS Cloud Practitioner</title>
+<link rel="stylesheet" href="assets/style.css">
+</head><body>
+
+<div id="login" hidden>
+  <div class="login-card">
+    <div class="tag">CPFIA · Generación 2</div>
+    <h1>Certificación AWS Cloud Practitioner</h1>
+    <p id="loginAyuda" style="color:var(--suave)">Entra con el correo con el que te registraste en el curso de certificación. No necesitas contraseña.</p>
+    <form id="fLogin" novalidate>
+      <div><label for="lgCorreo">Correo electrónico</label><input type="email" id="lgCorreo" autocomplete="email" inputmode="email" required></div>
+      <div><button class="btn" type="submit" id="lgBtn" style="width:100%">Entrar</button></div>
+      <div class="msg" id="lgMsg" role="alert" hidden></div>
+    </form>
+    <p class="ayuda" style="margin:16px 0 0;font-size:14px;color:var(--suave)">Si tu correo no aparece como registrado, escribe a <a href="mailto:tutor.cpfia1@infotec.mx">tutor.cpfia1@infotec.mx</a>.</p>
+  </div>
+</div>
+
+<div id="app" hidden>
+  <div class="preview" id="preview" hidden>Vista previa con datos de ejemplo: nada de lo que captures se guarda.</div>
+  <div class="topbar"><div class="wrap">
+    <span class="marca" id="marca">CPFIA · Generación 2</span>
+    <span class="usuario"><span class="nom" id="uNombre"></span><span class="coh" id="uCohort"></span><button class="linkbtn" type="button" id="btnSalir">Cerrar sesión</button></span>
+  </div></div>
+  <nav class="menu" aria-label="Principal"><div class="wrap" id="menu"></div></nav>
+  <main class="wrap vista" id="vista" tabindex="-1"><div class="cargando">Cargando…</div></main>
+  <a id="fabDudas" class="fab" href="#/dudas" hidden>Dudas</a>
+  <footer class="pie"><div class="wrap">M.C. Iliana Lizbeth Alvarado Lara · Tutora · Certificación AWS Cloud Practitioner · INFOTEC · <a id="pieCorreo" href="mailto:tutor.cpfia1@infotec.mx">tutor.cpfia1@infotec.mx</a> · <a href="#/privacidad">Aviso de privacidad</a></div></footer>
+</div>
+
+<div class="modal" id="modalAviso" hidden role="dialog" aria-modal="true" aria-labelledby="modalTit">
+  <div class="caja">
+    <div id="modalCuerpo"></div>
+    <div class="msg" id="modalMsg" role="alert" hidden style="margin-top:12px"></div>
+    <div class="acciones"><button class="btn" type="button" id="btnAcepto">Acepto y continúo</button></div>
+  </div>
+</div>
+
+<script src="assets/config.js"></script>
+<script src="assets/demo.js"></script>
+<script src="assets/app.js"></script>
+</body></html>
