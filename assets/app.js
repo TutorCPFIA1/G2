@@ -156,7 +156,7 @@ function pintarCabecera() {
   $('#marca').textContent = P('nombre_programa', 'CPFIA · Generación 2');
   $('#uNombre').textContent = titleCase(S.usuario.nombre);
   $('#uCohort').textContent = S.usuario.tipo === 'Revisor' ? (S.usuario.rol || 'Equipo') + ' · modo lectura' : 'Cohort ' + S.usuario.cohort;
-  var c = P('correo_contacto', 'tutor.cpfia1@infotec.mx'), a = $('#pieCorreo'); a.textContent = c; a.href = 'mailto:' + c;
+  var pt = $('#pieTexto'); if (pt) pt.textContent = P('pie_texto', pt.textContent);
 }
 function actualizarFab() { var f = $('#fabDudas'); if (!f) return; f.hidden = !S.usuario || S.vista === 'dudas' || (S.vista === 'simulacro' && SIM.fase === 'examen'); }
 function pintarMenu(actual) {
@@ -297,7 +297,7 @@ VISTAS.inicio = function () {
     var l = urlOk(a.liga);
     return '<div class="aviso ' + (/^importante/i.test(a.tipo) ? '' : 'info') + '"><b>' + esc(a.titulo) + '</b>' + parr(a.texto) + (l ? '<p><a href="' + esc(l) + '" target="_blank" rel="noopener">' + esc(a.texto_liga || 'Más información') + '</a></p>' : '') + '</div>';
   }).join('');
-  var nc = S.estado.noCertifica ? '<div class="alto"><h3>Registraste que no tomarás la certificación</h3><p>Motivo: ' + esc(S.estado.noCertifica.motivo) + ' (' + esc(fmtTs(S.estado.noCertifica.fecha)) + '). Coordinación dará seguimiento. Si cambias de opinión, escribe a <a href="mailto:' + esc(P('correo_contacto', '')) + '">' + esc(P('correo_contacto', '')) + '</a>.</p></div>' : '';
+  var nc = S.estado.noCertifica ? '<div class="alto"><h3>Registraste que no tomarás la certificación</h3><p>Motivo: ' + esc(S.estado.noCertifica.motivo) + ' (' + esc(fmtTs(S.estado.noCertifica.fecha)) + '). Coordinación dará seguimiento. Si cambias de opinión, escríbelo en la sección <a href="#/dudas">Dudas</a>.</p></div>' : '';
   var ps = proximaSesion(), banner = '';
   if (ps) banner = '<div class="banner"><b>Próxima sesión de apoyo:</b> ' + esc(fmtDia(ps.fecha)) + ', ' + esc(hora12(ps.inicio)) + ' a ' + esc(hora12(ps.fin)) + ' · <a href="#/sesiones">ver todas</a></div>';
   return '<div class="etapa">' + esc(P('nombre_programa', 'CPFIA · Generación 2')) + '</div><h1 class="t">Hola, ' + esc(titleCase(S.usuario.nombre)) + '</h1>' +
@@ -501,7 +501,7 @@ VISTAS.dudas = function () {
     temas.map(function (t) { return '<option value="' + esc(t.tema) + '" data-nc="' + (t.no_certifica ? 1 : 0) + '">' + esc(t.tema) + '</option>'; }).join('') + '</select></div>' +
     '<div id="boxDuda"><div><label for="dtTexto">Tu duda</label><textarea id="dtTexto" name="duda" maxlength="2000"></textarea></div>' +
     '<div style="margin-top:14px"><button class="btn" type="submit">Enviar duda</button></div></div>' +
-    '<div id="boxNC" hidden>' + (nc ? '<div class="msg info">Ya registraste que no tomarás la certificación (' + esc(nc.motivo) + '). Si cambias de opinión, escribe a ' + esc(P('correo_contacto', '')) + '.</div>' :
+    '<div id="boxNC" hidden>' + (nc ? '<div class="msg info">Ya registraste que no tomarás la certificación (' + esc(nc.motivo) + '). Si cambias de opinión, escríbelo aquí como una duda.</div>' :
       '<div class="alto"><h3>' + esc(adv ? adv.titulo : 'Antes de continuar') + '</h3><p>' + esc(adv ? adv.texto : '') + '</p></div>' +
       '<div class="fila"><div><label for="ncMotivo">Motivo</label><select id="ncMotivo" name="motivo"><option value="">Selecciona…</option>' + (S.config.motivos || []).map(function (m) { return '<option>' + esc(m) + '</option>'; }).join('') + '</select></div>' +
       '<div><label for="ncCom">Comentario (opcional)</label><input type="text" id="ncCom" name="comentario" maxlength="300"></div></div>' +
